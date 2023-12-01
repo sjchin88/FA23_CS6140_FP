@@ -19,7 +19,7 @@ import lightgbm as lgb
 
 # Make directory for save model path
 
-os.system('mkdir models')
+os.system('mkdir models_bare')
 sns.set_theme(style='white', palette='viridis')
 pal = sns.color_palette('viridis')
 
@@ -39,13 +39,12 @@ train = pd.read_csv('D:/OneDrive/NEU/CS6140/optiver-trading-at-the-close/train.c
                     dtype=dtypes).drop(['row_id', 'time_id'], axis=1)
 test = pd.read_csv('D:/OneDrive/NEU/CS6140/optiver-trading-at-the-close/test.csv',
                    dtype=dtypes).drop(['row_id', 'time_id'], axis=1)
-
+train.info()
 gc.collect()
 
-# %%[markdown]
 X = train[~train.target.isna()]
 y = X.pop('target')
-
+X.info()
 seed = 42
 tss = TimeSeriesSplit(10)
 
@@ -53,48 +52,6 @@ os.environ['PYTHONHASHSEED'] = '42'
 
 # %%[markdown]
 
-
-def imbalance_calculator(x):
-
-    features = ['seconds_in_bucket', 'imbalance_buy_sell_flag',
-                'imbalance_size', 'matched_size', 'bid_size', 'ask_size',
-                'reference_price', 'far_price', 'near_price', 'ask_price', 'bid_price', 'wap',
-                'imb_s1', 'imb_s2'
-                ]
-
-    x_copy = x.copy()
-
-    # imb_s1 and imb_s2 evaluate the imbalance_size
-    x_copy['imb_s1'] = x.eval('(bid_size - ask_size) / (bid_size + ask_size)')
-    x_copy['imb_s2'] = x.eval(
-        '(imbalance_size - matched_size) / (matched_size + imbalance_size)')
-
-    prices = ['reference_price', 'far_price',
-              'near_price', 'ask_price', 'bid_price', 'wap']
-
-    # imbalance based on a pair of prices
-    for i, a in enumerate(prices):
-        for j, b in enumerate(prices):
-            if i > j:
-                x_copy[f'{a}_{b}_imb'] = x.eval(f'({a} - {b}) / ({a} + {b})')
-                features.append(f'{a}_{b}_imb')
-
-    # imbalance based on a triplet of prices
-    for i, a in enumerate(prices):
-        for j, b in enumerate(prices):
-            for k, c in enumerate(prices):
-                if i > j and j > k:
-                    max_ = x[[a, b, c]].max(axis=1)
-                    min_ = x[[a, b, c]].min(axis=1)
-                    mid_ = x[[a, b, c]].sum(axis=1)-min_-max_
-
-                    x_copy[f'{a}_{b}_{c}_imb2'] = (max_-mid_)/(mid_-min_)
-                    features.append(f'{a}_{b}_{c}_imb2')
-
-    return x_copy[features]
-
-
-ImbalanceCalculator = FunctionTransformer(imbalance_calculator)
 # %%[markdown]
 
 # cv = time series split of 10
@@ -171,7 +128,6 @@ models = [
 for (label, model) in models:
     _ = cross_val_score(
         make_pipeline(
-            ImbalanceCalculator,
             model
         ),
         label=label
@@ -182,7 +138,7 @@ for (label, model) in models:
 # Explore the model trained
 # Job saved is a pipeline, the model is in second step
 pipeline = joblib.load("./models/best_model.model")
-trained_model = pipeline[1]
+trained_model = pipeline[0]
 print(trained_model)
 
 lgb.plot_importance(trained_model, importance_type="gain", figsize=(
