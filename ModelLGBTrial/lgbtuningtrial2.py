@@ -67,7 +67,12 @@ os.environ['PYTHONHASHSEED'] = '42'
 def objective(trial, X, y):
     param_grid = {
         "n_estimators": trial.suggest_categorical("n_estimators", [10000]),
-        "learning_rate": trial.suggest_float("learning_rate", 0.001, 0.3)
+        "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.3),
+        "num_leaves": trial.suggest_int("num_leaves", 20, 3000, step=20),
+        "max_depth": trial.suggest_int("max_depth", 3, 12),
+        "min_data_in_leaf": trial.suggest_int("min_data_in_leaf", 200, 10000, step=100),
+        "max_bin": trial.suggest_int("max_bin", 100, 300),
+        "min_gain_to_split": trial.suggest_float("min_gain_to_split", 0, 15)
     }
     cv = tss
     cv_scores = np.empty(10)
