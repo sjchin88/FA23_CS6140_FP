@@ -43,8 +43,9 @@ os.environ['PYTHONHASHSEED'] = '42'
 def print_correlation(data):
     df = copy.deepcopy(data)
     df = df.dropna()
+    # df.drop(['stock_id', 'column_nameB'], axis=1, inplace=True)
     print(df.shape)
-    float_columns = df.select_dtypes(include=['float']).columns
+    float_columns = df.columns
 
     def pearson_correlation(df, target_column, float_columns):
         correlations = {}

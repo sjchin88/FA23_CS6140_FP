@@ -205,14 +205,16 @@ def cross_validation(estimator, save_path, X, y, X_test, cv=kf, label=''):
 
 
 def objective(trial, X, y):
+    max_depth = trial.suggest_int("max_depth", 4, 12)
     param_grid = {
-        "n_estimators": trial.suggest_categorical("n_estimators", [10000]),
+        "n_estimators": trial.suggest_int("n_estimators", 50, 500, 50),
         "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.3),
-        "num_leaves": trial.suggest_int("num_leaves", 20, 3000, step=20),
-        "max_depth": trial.suggest_int("max_depth", 3, 12),
-        "min_data_in_leaf": trial.suggest_int("min_data_in_leaf", 200, 10000, step=100),
-        "max_bin": trial.suggest_int("max_bin", 63, 256),
-        "min_gain_to_split": trial.suggest_float("min_gain_to_split", 0, 15)
+        "max_depth": max_depth,
+        "num_leaves": trial.suggest_int("num_leaves", 2**(max_depth-1), 2**(max_depth), step=2**(max_depth-1)//8),
+        "min_data_in_leaf": trial.suggest_int("min_data_in_leaf", 100, 10000, step=100),
+        "max_bin": trial.suggest_int("max_bin", 32, 256),
+        "min_gain_to_split": trial.suggest_float("min_gain_to_split", 0, 15),
+        "subsample": trial.suggest_float("subsample", 0.5, 1)
     }
     cv = kf
     cv_scores = np.empty(10)
@@ -235,7 +237,7 @@ def objective(trial, X, y):
         # evaluate model for a fold
         val_score = mean_absolute_error(y_val, val_preds)
         cv_scores[fold] = val_score
-    return np.min(cv_scores)
+    return np.mean(cv_scores)
 
 
 # %%[markdown]
@@ -267,7 +269,7 @@ models = [
     ('LightGBM', LGBMRegressor(random_state=seed, objective='mse',
      device_type='gpu', early_stopping_rounds=100, **study.best_params))
 ]
-model_save_path = "initial_run_tuning_0"
+model_save_path = "initial_run_tuning_2"
 for (label, model) in models:
     _ = cross_validation(
         model,
