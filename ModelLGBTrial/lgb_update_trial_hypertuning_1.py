@@ -45,25 +45,6 @@ dtypes = {
 }
 
 
-def add_derivatives(train_raw, derivatives_targets):
-    # Load data from the save path
-    train_raw.sort_values(by=['stock_id', 'time_id'], inplace=True)
-    for target in derivatives_targets:
-        train_raw[f'first_derivative_{target}'] = train_raw['reference_price'] - \
-            train_raw['reference_price'].shift(1)
-        train_raw[f'first_derivative_{target}'] = train_raw.apply(
-            lambda x: 0 if x['seconds_in_bucket'] == 0 else x[f'first_derivative_{target}'], axis=1)
-        train_raw[f'sec_derivative_{target}'] = train_raw[f'first_derivative_{target}'] - \
-            train_raw[f'first_derivative_{target}'].shift(1)
-        train_raw[f'sec_derivative_{target}'] = train_raw.apply(
-            lambda x: 0 if x['seconds_in_bucket'] <= 10 else x[f'sec_derivative_{target}'], axis=1)
-
-    # print(train_raw.head())
-    train_raw.sort_values(by=['time_id', 'stock_id'], inplace=True)
-    # print(train_raw.head())
-    return train_raw
-
-
 def imbalance_calculator(x):
 
     x_copy = x.copy()
@@ -107,7 +88,6 @@ def read_data(data_path: str):
     # Load data from the save path
     train = pd.read_csv(f'{data_path}/train.csv',
                         dtype=dtypes)
-    train = add_derivatives(train, ['reference_price'])
     train.drop(['row_id', 'time_id'], axis=1, inplace=True)
     train = imbalance_calculator(train)
     test = pd.read_csv(f'{data_path}/test.csv',
