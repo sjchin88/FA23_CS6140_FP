@@ -1,3 +1,4 @@
+### 
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -42,7 +43,7 @@ for var in variables:
     plt.ylabel(var)
     plt.show()
     
-    
+###   
     
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -58,7 +59,7 @@ for var in variables:
     plt.ylabel('Frequency')
     plt.show()
     
-
+### 
     
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -119,6 +120,8 @@ print(f"Unique stock_id count: {unique_stock_id_count}")
 print(f"Unique date_id count: {unique_date_id_count}")
 print(f"Unique seconds_in_bucket count: {unique_seconds_in_bucket_count}")
 
+### 
+
 import pandas as pd
 from scipy.stats import pearsonr, spearmanr
 
@@ -156,6 +159,7 @@ sorted_spearman = sorted(spearman_results.items(), key=lambda x: x[1], reverse=T
 print("Sorted Pearson Correlation:", sorted_pearson)
 print("Sorted Spearman Correlation:", sorted_spearman)
 
+### 
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
