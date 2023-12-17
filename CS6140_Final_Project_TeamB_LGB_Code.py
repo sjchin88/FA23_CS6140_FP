@@ -644,7 +644,7 @@ best_model_wap = cross_validation(model_wap, X, y_wap, label='modelwap')
 print('\ntraining model_idx')
 model_idx = LGBMRegressor(
     random_state=seed, objective='mse', device_type='gpu', verbosity=0)
-best_model_idx = cross_validation(model_idx, X, y_wap, label='modelidx')
+best_model_idx = cross_validation(model_idx, X, y_index, label='modelidx')
 
 test_wap_preds = best_model_wap.predict(X_test)
 test_idx_preds = best_model_idx.predict(X_test)
