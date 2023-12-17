@@ -251,7 +251,6 @@ for (label, model) in models:
 pipeline = joblib.load(f"./{model_save_path}/best_model.model")
 trained_model = pipeline[0]
 print(trained_model)
-
 lgb.plot_importance(trained_model, importance_type="gain", figsize=(
     7, 8), precision=0, title="LightGBM Feature Importance (Gain)")
 plt.show()
