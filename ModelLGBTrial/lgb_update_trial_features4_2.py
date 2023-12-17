@@ -225,9 +225,9 @@ def cross_validation(estimator_wap, estimator_idx, save_path, X, y, y_wap, y_ind
 # %%[markdown]
 # Call the required function and run the model
 model_wap = LGBMRegressor(
-    random_state=seed, objective='mae', device_type='gpu')
+    random_state=seed, objective='mse', device_type='gpu')
 model_idx = LGBMRegressor(
-    random_state=seed, objective='mae', device_type='gpu')
+    random_state=seed, objective='mse', device_type='gpu')
 X, y, y_wap, y_index = read_data(
     "D:/OneDrive/NEU/CS6140/optiver-trading-at-the-close")
 model_save_path = "initial_run_featuresComboImb"
