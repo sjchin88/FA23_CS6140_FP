@@ -624,11 +624,11 @@ def read_data_2model(data_path: str, apply_imb=False):
 # %% [markdown]
 # Now running the process. First get the data, should take about 60-70s
 start = time.time()
-# X, y, y_wap, y_index, X_test, y_test = read_data_2model(data_path)
+X, y, y_wap, y_index, X_test, y_test = read_data_2model(data_path)
 
 # Can also switch to apply imb features, training took longer
-X, y, y_wap, y_index, X_test, y_test = read_data_2model(
-    data_path, apply_imb=True)
+# X, y, y_wap, y_index, X_test, y_test = read_data_2model(
+#    data_path, apply_imb=True)
 
 end = time.time()
 print(f'Data processing time took = {(end - start):.0f} seconds')
